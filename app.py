@@ -303,6 +303,7 @@ def train_random_forest(species):
     accuracy = accuracy_score(y_test, y_pred)
 
     majority_class = y_train.value_counts().idxmax()
+
     baseline_accuracy = (
         y_test == majority_class
     ).mean()
@@ -357,6 +358,7 @@ def train_random_forest(species):
 if page == "🏠 Dashboard":
 
     st.title("🌿 Biodiversity Loss Analysis")
+
     st.subheader(
         "Statistical Analysis and Machine Learning "
         "for IUCN Conservation Status"
@@ -413,6 +415,7 @@ if page == "🏠 Dashboard":
             latest["Total_Threatened"]
             / latest["Total_Assessed"]
         )
+
         st.metric(
             "Threatened / Assessed",
             f"{ratio:.2%}",
@@ -445,6 +448,7 @@ elif page == "📊 Regression Analysis":
     df = historical_dataframe()
 
     st.subheader("Historical IUCN Red List Data")
+
     st.dataframe(
         df,
         use_container_width=True,
@@ -473,9 +477,12 @@ elif page == "📊 Regression Analysis":
 
     ax.set_xlabel("Year")
     ax.set_ylabel("Number of Species")
-    ax.set_title("IUCN Red List Assessment Trends (1996–2025)")
+    ax.set_title(
+        "IUCN Red List Assessment Trends (1996–2025)"
+    )
     ax.legend()
     ax.grid(alpha=0.3)
+
     fig.tight_layout()
 
     st.pyplot(fig)
@@ -498,10 +505,13 @@ elif page == "📊 Regression Analysis":
 
     ax.set_xlabel("Year")
     ax.set_ylabel("Threatened / Assessed")
+
     ax.set_title(
         "Share of Assessed Species Classified as Threatened"
     )
+
     ax.grid(alpha=0.3)
+
     fig.tight_layout()
 
     st.pyplot(fig)
@@ -553,24 +563,44 @@ elif page == "📊 Regression Analysis":
     )
 
     with tab1:
+
         st.dataframe(
             summary_a,
             use_container_width=True,
             hide_index=True,
         )
+
         c1, c2 = st.columns(2)
-        c1.metric("R-squared", f"{r2_a:.5f}")
-        c2.metric("Residual Std. Error", f"{se_a:.4f}")
+
+        c1.metric(
+            "R-squared",
+            f"{r2_a:.5f}",
+        )
+
+        c2.metric(
+            "Residual Std. Error",
+            f"{se_a:.4f}",
+        )
 
     with tab2:
+
         st.dataframe(
             summary_t,
             use_container_width=True,
             hide_index=True,
         )
+
         c1, c2 = st.columns(2)
-        c1.metric("R-squared", f"{r2_t:.5f}")
-        c2.metric("Residual Std. Error", f"{se_t:.4f}")
+
+        c1.metric(
+            "R-squared",
+            f"{r2_t:.5f}",
+        )
+
+        c2.metric(
+            "Residual Std. Error",
+            f"{se_t:.4f}",
+        )
 
     st.subheader("CAGR Analysis")
 
@@ -591,10 +621,22 @@ elif page == "📊 Regression Analysis":
                 "2015–2025 threatened",
             ],
             "CAGR": [
-                calculate_cagr(full, "Total_Assessed"),
-                calculate_cagr(full, "Total_Threatened"),
-                calculate_cagr(recent, "Total_Assessed"),
-                calculate_cagr(recent, "Total_Threatened"),
+                calculate_cagr(
+                    full,
+                    "Total_Assessed",
+                ),
+                calculate_cagr(
+                    full,
+                    "Total_Threatened",
+                ),
+                calculate_cagr(
+                    recent,
+                    "Total_Assessed",
+                ),
+                calculate_cagr(
+                    recent,
+                    "Total_Threatened",
+                ),
             ],
         }
     )
@@ -611,17 +653,24 @@ elif page == "📊 Regression Analysis":
         hide_index=True,
     )
 
-    st.subheader("Illustrative 2026–2031 Regression Extrapolation")
+    st.subheader(
+        "Illustrative 2026–2031 Regression Extrapolation"
+    )
 
-    future_years = np.arange(2026, 2032)
+    future_years = np.arange(
+        2026,
+        2032,
+    )
 
     pred_assessed = cubic_model(
-        future_years - d_assessed["Year"].min(),
+        future_years
+        - d_assessed["Year"].min(),
         *params_assessed,
     )
 
     pred_threatened = cubic_model(
-        future_years - d_threatened["Year"].min(),
+        future_years
+        - d_threatened["Year"].min(),
         *params_threatened,
     )
 
@@ -630,11 +679,15 @@ elif page == "📊 Regression Analysis":
             "Year": future_years,
             "Predicted_Assessed": np.maximum(
                 0,
-                np.round(pred_assessed).astype(int),
+                np.round(
+                    pred_assessed
+                ).astype(int),
             ),
             "Predicted_Threatened": np.maximum(
                 0,
-                np.round(pred_threatened).astype(int),
+                np.round(
+                    pred_threatened
+                ).astype(int),
             ),
         }
     )
@@ -645,7 +698,9 @@ elif page == "📊 Regression Analysis":
         hide_index=True,
     )
 
-    csv = prediction_table.to_csv(index=False).encode("utf-8")
+    csv = prediction_table.to_csv(
+        index=False
+    ).encode("utf-8")
 
     st.download_button(
         "📥 Download Predictions CSV",
@@ -670,27 +725,38 @@ elif page == "📈 Distribution Fitting":
     st.title("📈 Distribution Fitting")
 
     if distribution_file is None:
+
         st.warning(
             "Please upload Distribution_Data.csv using the "
             "sidebar to use this module."
         )
+
         st.stop()
 
     try:
+
         data = load_distribution_file(
             distribution_file.getvalue()
         )
+
     except Exception as e:
-        st.error(f"Could not read the CSV file: {e}")
+
+        st.error(
+            f"Could not read the CSV file: {e}"
+        )
+
         st.stop()
 
     if "Total" not in data.columns:
+
         st.error(
             "The uploaded CSV must contain a 'Total' column."
         )
+
         st.stop()
 
     st.subheader("Dataset Preview")
+
     st.dataframe(
         data.head(20),
         use_container_width=True,
@@ -703,28 +769,50 @@ elif page == "📈 Distribution Fitting":
     )
 
     try:
+
         total_sp = (
             data["Total"]
             .astype(str)
-            .str.replace(",", "", regex=False)
+            .str.replace(
+                ",",
+                "",
+                regex=False,
+            )
             .astype(float)
             .dropna()
             .to_numpy()
         )
+
     except Exception as e:
+
         st.error(
             f"Could not convert the 'Total' column to numeric values: {e}"
         )
+
         st.stop()
 
     if len(total_sp) < 2:
-        st.error("At least two observations are required.")
+
+        st.error(
+            "At least two observations are required."
+        )
+
         st.stop()
 
     mean_x = np.mean(total_sp)
-    variance_x = np.var(total_sp, ddof=1)
-    sd_x = np.std(total_sp, ddof=1)
+
+    variance_x = np.var(
+        total_sp,
+        ddof=1,
+    )
+
+    sd_x = np.std(
+        total_sp,
+        ddof=1,
+    )
+
     skewness = stats.skew(total_sp)
+
     kurtosis = stats.kurtosis(
         total_sp,
         fisher=False,
@@ -794,19 +882,25 @@ elif page == "📈 Distribution Fitting":
     ax.set_xlabel(
         "Number of Threatened Species"
     )
+
     ax.set_ylabel("Frequency")
+
     ax.set_title(
         "Distribution of Threatened Species"
     )
 
     fig.tight_layout()
+
     st.pyplot(fig)
 
     st.subheader("Top Countries / Territories")
 
     if "Name" in data.columns:
+
         top_countries = (
-            data.assign(Total=total_sp)
+            data.assign(
+                Total=total_sp
+            )
             .sort_values(
                 "Total",
                 ascending=False,
@@ -815,7 +909,9 @@ elif page == "📈 Distribution Fitting":
         )
 
         st.dataframe(
-            top_countries[["Name", "Total"]],
+            top_countries[
+                ["Name", "Total"]
+            ],
             use_container_width=True,
             hide_index=True,
         )
@@ -832,10 +928,13 @@ elif page == "📈 Distribution Fitting":
         )
     )
 
-    poisson_aic = -2 * ll_poisson + 2
+    poisson_aic = (
+        -2 * ll_poisson + 2
+    )
 
     # Geometric
     def geom_nll(params, x):
+
         p = params[0]
 
         if not 0 < p < 1:
@@ -857,6 +956,7 @@ elif page == "📈 Distribution Fitting":
 
     # Negative Binomial
     def nbinom_nll(params, x):
+
         r, p = params
 
         if r <= 0 or not 0 < p < 1:
@@ -890,7 +990,9 @@ elif page == "📈 Distribution Fitting":
         total_sp,
     )
 
-    nbinom_aic = -2 * ll_nbinom + 4
+    nbinom_aic = (
+        -2 * ll_nbinom + 4
+    )
 
     distribution_table = pd.DataFrame(
         {
@@ -947,11 +1049,14 @@ elif page == "📈 Distribution Fitting":
     )
 
     if nbinom_aic < poisson_aic:
+
         st.info(
             "For the Poisson vs Negative Binomial comparison, "
             "the Negative Binomial has the lower AIC."
         )
+
     else:
+
         st.info(
             "For the Poisson vs Negative Binomial comparison, "
             "the Poisson has the lower AIC."
@@ -960,12 +1065,19 @@ elif page == "📈 Distribution Fitting":
     st.subheader("Box Plot")
 
     fig, ax = plt.subplots(figsize=(6, 4))
+
     ax.boxplot(total_sp)
-    ax.set_ylabel("Threatened Species Count")
+
+    ax.set_ylabel(
+        "Threatened Species Count"
+    )
+
     ax.set_title(
         "Box Plot of Threatened Species"
     )
+
     fig.tight_layout()
+
     st.pyplot(fig)
 
 
@@ -978,20 +1090,26 @@ elif page == "🔄 Markov Chain":
     st.title("🔄 Markov Chain Analysis")
 
     if markov_file is None:
+
         st.warning(
             "Please upload Markov_Random_Forest (1).xlsx "
             "using the sidebar."
         )
+
         st.stop()
 
     try:
+
         species = load_status_change_data(
             markov_file.getvalue()
         )
+
     except Exception as e:
+
         st.error(
             f"Could not read the Excel file: {e}"
         )
+
         st.stop()
 
     required = {
@@ -1002,10 +1120,12 @@ elif page == "🔄 Markov Chain":
     missing = required - set(species.columns)
 
     if missing:
+
         st.error(
             "Missing required columns: "
             + ", ".join(sorted(missing))
         )
+
         st.stop()
 
     species = species.dropna(
@@ -1016,8 +1136,12 @@ elif page == "🔄 Markov Chain":
     )
 
     species = species[
-        species["IUCN Red List (2021)"].isin(STATUS_ORDER)
-        & species["IUCN Red List (2022)"].isin(STATUS_ORDER)
+        species["IUCN Red List (2021)"].isin(
+            STATUS_ORDER
+        )
+        & species["IUCN Red List (2022)"].isin(
+            STATUS_ORDER
+        )
     ].copy()
 
     st.metric(
@@ -1026,6 +1150,7 @@ elif page == "🔄 Markov Chain":
     )
 
     if "Reason for change" in species.columns:
+
         st.subheader("Reason for Change")
 
         reason_counts = (
@@ -1051,13 +1176,25 @@ elif page == "🔄 Markov Chain":
     }
 
     species["direction"] = np.where(
-        species["IUCN Red List (2022)"].map(rank)
-        > species["IUCN Red List (2021)"].map(rank),
+        species[
+            "IUCN Red List (2022)"
+        ].map(rank)
+        > species[
+            "IUCN Red List (2021)"
+        ].map(rank),
+
         "Worsened",
+
         np.where(
-            species["IUCN Red List (2022)"].map(rank)
-            < species["IUCN Red List (2021)"].map(rank),
+            species[
+                "IUCN Red List (2022)"
+            ].map(rank)
+            < species[
+                "IUCN Red List (2021)"
+            ].map(rank),
+
             "Improved",
+
             "Same",
         ),
     )
@@ -1077,6 +1214,10 @@ elif page == "🔄 Markov Chain":
         hide_index=True,
     )
 
+    # ========================================================
+    # TRANSITION COUNTS
+    # ========================================================
+
     trans_counts = pd.crosstab(
         species["IUCN Red List (2021)"],
         species["IUCN Red List (2022)"],
@@ -1095,18 +1236,29 @@ elif page == "🔄 Markov Chain":
         use_container_width=True,
     )
 
+    # ========================================================
+    # CALCULATE TRANSITION PROBABILITY MATRIX
+    # ========================================================
+
+    row_totals = trans_counts.sum(axis=1)
+
     transition_matrix = (
         trans_counts
         .div(
-            trans_counts.sum(axis=1),
+            row_totals.replace(0, np.nan),
             axis=0,
         )
         .fillna(0)
-        .to_numpy()
+        .to_numpy(dtype=float)
+        .copy()
     )
 
+    # If a state has no observed outgoing transitions,
+    # treat it as remaining in the same state.
     for i in range(len(STATUS_ORDER)):
+
         if transition_matrix[i].sum() == 0:
+
             transition_matrix[i, i] = 1.0
 
     transition_df = pd.DataFrame(
@@ -1115,23 +1267,47 @@ elif page == "🔄 Markov Chain":
         columns=STATUS_ORDER,
     )
 
-    st.subheader("Transition Probability Matrix")
+    # ========================================================
+    # TRANSITION PROBABILITY MATRIX DISPLAY
+    # ========================================================
+
+    st.subheader(
+        "Transition Probability Matrix"
+    )
 
     st.dataframe(
-        transition_df.style.format("{:.4f}"),
+        transition_df.style.format(
+            "{:.4f}"
+        ),
         use_container_width=True,
     )
+
+    # ========================================================
+    # MARKOV TRANSITION GRAPH
+    # ========================================================
 
     st.subheader("Markov Transition Graph")
 
     G = nx.DiGraph()
-    G.add_nodes_from(STATUS_ORDER)
 
-    for i, from_state in enumerate(STATUS_ORDER):
-        for j, to_state in enumerate(STATUS_ORDER):
-            probability = transition_matrix[i, j]
+    G.add_nodes_from(
+        STATUS_ORDER
+    )
+
+    for i, from_state in enumerate(
+        STATUS_ORDER
+    ):
+
+        for j, to_state in enumerate(
+            STATUS_ORDER
+        ):
+
+            probability = (
+                transition_matrix[i, j]
+            )
 
             if probability > 0:
+
                 G.add_edge(
                     from_state,
                     to_state,
@@ -1140,7 +1316,9 @@ elif page == "🔄 Markov Chain":
 
     pos = nx.circular_layout(G)
 
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(
+        figsize=(8, 8)
+    )
 
     nx.draw_networkx_nodes(
         G,
@@ -1167,7 +1345,9 @@ elif page == "🔄 Markov Chain":
 
     edge_labels = {
         (u, v): f"{d['weight']:.2f}"
-        for u, v, d in G.edges(data=True)
+        for u, v, d in G.edges(
+            data=True
+        )
     }
 
     nx.draw_networkx_edge_labels(
@@ -1181,18 +1361,31 @@ elif page == "🔄 Markov Chain":
     ax.set_title(
         "IUCN Conservation Status Transition Chain"
     )
+
     ax.axis("off")
+
     fig.tight_layout()
 
     st.pyplot(fig)
 
-    st.subheader("Steady-State Distribution")
+    # ========================================================
+    # STEADY-STATE DISTRIBUTION
+    # ========================================================
+
+    st.subheader(
+        "Steady-State Distribution"
+    )
 
     def steady_state(P):
-        eigenvalues, eigenvectors = np.linalg.eig(P.T)
+
+        eigenvalues, eigenvectors = np.linalg.eig(
+            P.T
+        )
 
         index = np.argmin(
-            np.abs(eigenvalues - 1)
+            np.abs(
+                eigenvalues - 1
+            )
         )
 
         vector = np.real(
@@ -1214,36 +1407,56 @@ elif page == "🔄 Markov Chain":
     )
 
     st.dataframe(
-        ss_series.reset_index()
+        ss_series
+        .reset_index()
         .rename(
             columns={
                 "index": "State"
             }
         )
         .style.format(
-            {"Probability": "{:.6f}"}
+            {
+                "Probability": "{:.6f}"
+            }
         ),
         use_container_width=True,
         hide_index=True,
     )
 
-    fig, ax = plt.subplots(figsize=(7, 4))
+    fig, ax = plt.subplots(
+        figsize=(7, 4)
+    )
 
     ax.bar(
         STATUS_ORDER,
         ss,
     )
 
-    ax.set_xlabel("IUCN Status")
-    ax.set_ylabel("Long-run Probability")
+    ax.set_xlabel(
+        "IUCN Status"
+    )
+
+    ax.set_ylabel(
+        "Long-run Probability"
+    )
+
     ax.set_title(
         "Steady-State Conservation Status Distribution"
     )
 
     fig.tight_layout()
+
     st.pyplot(fig)
 
-    transition_csv = transition_df.to_csv().encode("utf-8")
+    # ========================================================
+    # DOWNLOAD RESULTS
+    # ========================================================
+
+    transition_csv = (
+        transition_df
+        .to_csv()
+        .encode("utf-8")
+    )
 
     st.download_button(
         "📥 Download Transition Matrix",
@@ -1255,7 +1468,11 @@ elif page == "🔄 Markov Chain":
     steady_csv = (
         ss_series
         .reset_index()
-        .rename(columns={"index": "State"})
+        .rename(
+            columns={
+                "index": "State"
+            }
+        )
         .to_csv(index=False)
         .encode("utf-8")
     )
@@ -1285,28 +1502,40 @@ elif page == "🌲 Random Forest":
     st.title("🌲 Random Forest Classification")
 
     if markov_file is None:
+
         st.warning(
             "Please upload Markov_Random_Forest (1).xlsx "
             "using the sidebar."
         )
+
         st.stop()
 
     try:
+
         species = load_status_change_data(
             markov_file.getvalue()
         )
+
     except Exception as e:
+
         st.error(
             f"Could not read the Excel file: {e}"
         )
+
         st.stop()
 
     try:
-        rf = train_random_forest(species)
+
+        rf = train_random_forest(
+            species
+        )
+
     except Exception as e:
+
         st.error(
             f"Could not train the Random Forest model: {e}"
         )
+
         st.stop()
 
     st.subheader("Model Overview")
@@ -1350,22 +1579,44 @@ elif page == "🌲 Random Forest":
 
     cm = rf["confusion_matrix"]
 
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(
+        figsize=(7, 5)
+    )
 
     image = ax.imshow(cm)
 
-    ax.set_xticks(range(len(rf["labels"])))
-    ax.set_yticks(range(len(rf["labels"])))
+    ax.set_xticks(
+        range(len(rf["labels"]))
+    )
 
-    ax.set_xticklabels(rf["labels"])
-    ax.set_yticklabels(rf["labels"])
+    ax.set_yticks(
+        range(len(rf["labels"]))
+    )
 
-    ax.set_xlabel("Predicted Status")
-    ax.set_ylabel("Actual Status")
-    ax.set_title("Random Forest Confusion Matrix")
+    ax.set_xticklabels(
+        rf["labels"]
+    )
+
+    ax.set_yticklabels(
+        rf["labels"]
+    )
+
+    ax.set_xlabel(
+        "Predicted Status"
+    )
+
+    ax.set_ylabel(
+        "Actual Status"
+    )
+
+    ax.set_title(
+        "Random Forest Confusion Matrix"
+    )
 
     for i in range(cm.shape[0]):
+
         for j in range(cm.shape[1]):
+
             ax.text(
                 j,
                 i,
@@ -1374,12 +1625,18 @@ elif page == "🌲 Random Forest":
                 va="center",
             )
 
-    fig.colorbar(image, ax=ax)
+    fig.colorbar(
+        image,
+        ax=ax,
+    )
+
     fig.tight_layout()
 
     st.pyplot(fig)
 
-    st.subheader("Classification Report")
+    st.subheader(
+        "Classification Report"
+    )
 
     report_df = pd.DataFrame(
         rf["report"]
@@ -1390,19 +1647,30 @@ elif page == "🌲 Random Forest":
         use_container_width=True,
     )
 
-    st.subheader("Feature Importance")
+    st.subheader(
+        "Feature Importance"
+    )
 
-    importances = rf["importances"]
+    importances = rf[
+        "importances"
+    ]
 
     st.dataframe(
-        importances.rename("Importance")
+        importances
+        .rename("Importance")
         .reset_index()
-        .rename(columns={"index": "Feature"}),
+        .rename(
+            columns={
+                "index": "Feature"
+            }
+        ),
         use_container_width=True,
         hide_index=True,
     )
 
-    fig, ax = plt.subplots(figsize=(9, 6))
+    fig, ax = plt.subplots(
+        figsize=(9, 6)
+    )
 
     importances.plot(
         kind="barh",
@@ -1410,21 +1678,33 @@ elif page == "🌲 Random Forest":
     )
 
     ax.invert_yaxis()
-    ax.set_xlabel("Importance")
-    ax.set_ylabel("Feature")
+
+    ax.set_xlabel(
+        "Importance"
+    )
+
+    ax.set_ylabel(
+        "Feature"
+    )
+
     ax.set_title(
         "Random Forest Feature Importance"
     )
 
     fig.tight_layout()
+
     st.pyplot(fig)
 
-    st.subheader("Save Trained Model")
+    st.subheader(
+        "Save Trained Model"
+    )
 
     model_package = {
         "model": rf["model"],
         "encoder": rf["encoder"],
-        "feature_columns": rf["X"].columns.tolist(),
+        "feature_columns": rf[
+            "X"
+        ].columns.tolist(),
         "status_order": STATUS_ORDER,
     }
 
@@ -1451,52 +1731,75 @@ elif page == "🌲 Random Forest":
 
 elif page == "🔮 IUCN Prediction":
 
-    st.title("🔮 Interactive IUCN Status Prediction")
+    st.title(
+        "🔮 Interactive IUCN Status Prediction"
+    )
 
     if markov_file is None:
+
         st.warning(
             "Please upload Markov_Random_Forest (1).xlsx "
             "using the sidebar."
         )
+
         st.stop()
 
     try:
+
         species = load_status_change_data(
             markov_file.getvalue()
         )
+
     except Exception as e:
+
         st.error(
             f"Could not read the Excel file: {e}"
         )
+
         st.stop()
 
     try:
-        rf = train_random_forest(species)
+
+        rf = train_random_forest(
+            species
+        )
+
     except Exception as e:
+
         st.error(
             f"Could not train the Random Forest model: {e}"
         )
+
         st.stop()
 
     X = rf["X"]
+
     encoder = rf["encoder"]
+
     classifier = rf["model"]
 
     taxonomy_columns = [
         column
         for column in X.columns
-        if column.startswith("Taxonomy_")
+        if column.startswith(
+            "Taxonomy_"
+        )
     ]
 
     taxonomy_names = [
-        column.replace("Taxonomy_", "")
+        column.replace(
+            "Taxonomy_",
+            "",
+        )
         for column in taxonomy_columns
     ]
 
     if not taxonomy_names:
+
         st.error(
             "No taxonomy columns were found in the dataset."
         )
+
         st.stop()
 
     st.markdown(
@@ -1510,12 +1813,14 @@ elif page == "🔮 IUCN Prediction":
     col1, col2 = st.columns(2)
 
     with col1:
+
         user_taxonomy = st.selectbox(
             "Taxonomy / Group",
             taxonomy_names,
         )
 
     with col2:
+
         user_status = st.selectbox(
             "IUCN Status in 2021",
             STATUS_ORDER,
@@ -1546,14 +1851,17 @@ elif page == "🔮 IUCN Prediction":
         ] = encoded_status
 
         taxonomy_column = (
-            "Taxonomy_" + user_taxonomy
+            "Taxonomy_"
+            + user_taxonomy
         )
 
         taxonomy_found = (
-            taxonomy_column in input_data.columns
+            taxonomy_column
+            in input_data.columns
         )
 
         if taxonomy_found:
+
             input_data[
                 taxonomy_column
             ] = 1
@@ -1562,15 +1870,20 @@ elif page == "🔮 IUCN Prediction":
             input_data
         )[0]
 
-        probabilities = classifier.predict_proba(
-            input_data
-        )[0]
+        probabilities = (
+            classifier.predict_proba(
+                input_data
+            )[0]
+        )
 
-        max_probability = probabilities.max()
+        max_probability = (
+            probabilities.max()
+        )
 
         st.success(
             f"Predicted 2022 IUCN Status: "
-            f"**{prediction} — {STATUS_NAMES.get(prediction, prediction)}**"
+            f"**{prediction} — "
+            f"{STATUS_NAMES.get(prediction, prediction)}**"
         )
 
         c1, c2, c3 = st.columns(3)
@@ -1592,68 +1905,103 @@ elif page == "🔮 IUCN Prediction":
 
         probability_table = pd.DataFrame(
             {
-                "IUCN Status": classifier.classes_,
+                "IUCN Status":
+                    classifier.classes_,
+
                 "Status Name": [
                     STATUS_NAMES.get(
                         x,
                         str(x),
                     )
-                    for x in classifier.classes_
+                    for x
+                    in classifier.classes_
                 ],
-                "Probability (%)": probabilities * 100,
+
+                "Probability (%)":
+                    probabilities * 100,
             }
         ).sort_values(
             "Probability (%)",
             ascending=False,
         )
 
-        st.subheader("Probability for Each IUCN Class")
+        st.subheader(
+            "Probability for Each IUCN Class"
+        )
 
         st.dataframe(
             probability_table.style.format(
                 {
-                    "Probability (%)": "{:.2f}%"
+                    "Probability (%)":
+                        "{:.2f}%"
                 }
             ),
             use_container_width=True,
             hide_index=True,
         )
 
-        st.subheader("Prediction Probability Chart")
-
-        fig, ax = plt.subplots(figsize=(8, 4))
-
-        ax.bar(
-            probability_table["IUCN Status"],
-            probability_table["Probability (%)"],
+        st.subheader(
+            "Prediction Probability Chart"
         )
 
-        ax.set_xlabel("IUCN Status")
-        ax.set_ylabel("Probability (%)")
+        fig, ax = plt.subplots(
+            figsize=(8, 4)
+        )
+
+        ax.bar(
+            probability_table[
+                "IUCN Status"
+            ],
+            probability_table[
+                "Probability (%)"
+            ],
+        )
+
+        ax.set_xlabel(
+            "IUCN Status"
+        )
+
+        ax.set_ylabel(
+            "Probability (%)"
+        )
+
         ax.set_title(
             "Random Forest IUCN Status Probabilities"
         )
 
         fig.tight_layout()
+
         st.pyplot(fig)
 
         prediction_result = pd.DataFrame(
             {
-                "Taxonomy": [user_taxonomy],
-                "IUCN_Status_2021": [user_status],
-                "Predicted_IUCN_Status_2022": [prediction],
+                "Taxonomy": [
+                    user_taxonomy
+                ],
+
+                "IUCN_Status_2021": [
+                    user_status
+                ],
+
+                "Predicted_IUCN_Status_2022": [
+                    prediction
+                ],
+
                 "Prediction_Probability": [
                     max_probability
                 ],
+
                 "Taxonomy_Found": [
                     taxonomy_found
                 ],
             }
         )
 
-        result_csv = prediction_result.to_csv(
-            index=False
-        ).encode("utf-8")
+        result_csv = (
+            prediction_result
+            .to_csv(index=False)
+            .encode("utf-8")
+        )
 
         st.download_button(
             "📥 Download Prediction Result",
@@ -1674,6 +2022,7 @@ elif page == "🔮 IUCN Prediction":
 # ============================================================
 
 st.sidebar.markdown("---")
+
 st.sidebar.caption(
     "Biodiversity Loss Analysis • Statistical + ML Dashboard"
 )
